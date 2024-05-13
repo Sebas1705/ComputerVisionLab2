@@ -1,3 +1,5 @@
-datos/train_ocr/
-datos/validation_ocr/
-datos/test_ocr_panels/
+proyect/images/test_ocr_panels
+proyect/images/train_ocr_new
+proyect/images/train_ocr_origen
+proyect/images/validation_ocr
+__pycache__/

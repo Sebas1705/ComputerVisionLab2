@@ -26,16 +26,16 @@ def save_images(
     cv2Const : int, optional
         An constant that transform an image into a colar format, Defaulst to None
     """
+    if not os.path.exists(path):
+        os.mkdir(path)
     for i in range(len(images_to_save)):
         img: MatLike = cv2.cvtColor(images_to_save[i],cv2Const) if cv2Const!=None else images_to_save[i]
         cv2.imwrite(f"{path}/{extra}{i:0>5}.png",img)
         
 def read_images(
-    path:str=IMAGES_PATH+"test_selected/",
-    start:int=0,
-    end:int=20,
+    path:str,
     cv2Const:int=cv2.COLOR_BGR2RGB
-) -> tuple[list[MatLike],list[str]]:
+) -> list[MatLike]:
     """
     Reads a list of images from the specified path.
 
@@ -44,12 +44,6 @@ def read_images(
     path : str, optional
         The path from which the images are to be read.
         Defaults to "../../images/test".
-    start : int, optional
-        The index of the first image to be read.
-        Defaults to 0.
-    end : int, optional
-        The index of the last image to be read.
-        Defaults to 20.
     cv2Const : int, optional
         The constant used for converting the images.
         Defaults to cv2.COLOR_BGR2RGB.
@@ -59,12 +53,11 @@ def read_images(
     list[MatLike]
         A list of images read from the specified path.
     """
-    return ([
+    return [
         cv2.cvtColor(cv2.imread(os.path.join(path,file)),cv2Const) 
         if cv2Const is not None else cv2.imread(os.path.join(path,file))
         for file in os.listdir(path)
-    ][start:end],
-    [file for file in os.listdir(path)])
+    ]
 
 def remove_directory_content(
     path:str

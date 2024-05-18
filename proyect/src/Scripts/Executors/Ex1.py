@@ -1,3 +1,4 @@
+from numpy import ndarray
 from Classes.Ex1.ImagePreprocessor import ImagePreprocessor
 from settings import IMAGES_PATH
 import Common.FileFuncs as ff
@@ -30,23 +31,38 @@ def __create_images_preprocessors(
     return imgs_preps
 
 def __save_characters(
-    characters: List[tuple[List[MatLike],str]]
+    characters: List[tuple[List[MatLike],str]],
+    image_dir: str,
+    new_path: str
 ) -> None:
-    os.mkdir(IMAGES_PATH+"train_ocr_new\\mayus")
-    os.mkdir(IMAGES_PATH+"train_ocr_new\\minus")
+    os.mkdir(IMAGES_PATH+f"{new_path}mayus")
+    os.mkdir(IMAGES_PATH+f"{new_path}minus")
     for chars,str in characters:
-        path=IMAGES_PATH+"train_ocr_new\\"+str
-        path = path.split("train_ocr_origen\\")
+        path=IMAGES_PATH+new_path+str
+        path = path.split(image_dir)
         path = path[0]+path[1]
         ff.save_images(chars,path)
-    
-def exec1() -> None:
+        
+def __generate_arrays(
+    characters: List[tuple[List[MatLike],str]]
+) -> tuple[ndarray,ndarray]:
+    x: ndarray = []
+    y: ndarray = []
+    for chars,str in characters:
+        x.append(chars)
+        y.append(str)
+    return x,y
+
+def __get_arrays(
+    image_dir: str,
+    new_path: str
+) -> tuple[ndarray,ndarray]:
     
     #Remover el contenido de las imagenes procesadas:
-    ff.remove_directory_content(IMAGES_PATH+"train_ocr_new\\")
+    ff.remove_directory_content(IMAGES_PATH+new_path)
     
     #Cargar las imágenes:
-    dirs: List[str] = __get_all_directories("train_ocr_origen\\")
+    dirs: List[str] = __get_all_directories(image_dir)
     images_dir: List[tuple[List[MatLike],str]] = __charge_train_images(dirs)
     
     #Procesar las imagenes y obtener los caracteres:
@@ -57,7 +73,23 @@ def exec1() -> None:
     ]
     
     #Guardar las imágenes procesadas:
-    __save_characters(characters)
+    __save_characters(characters,image_dir,new_path)
+    
+    #Crear los arrays:
+    return __generate_arrays(characters)
+    
+def exec1() -> None:
+    
+    #Train arrays:
+    x_train,y_train = __get_arrays("train_ocr_origen\\","train_ocr_new\\")
+    
+    #Test arrays:
+    x_test,y_test = __get_arrays("validation_ocr_origen\\","validation_ocr_new\\")
+    
+    
+    
+    
+    
     
     
     

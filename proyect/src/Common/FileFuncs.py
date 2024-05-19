@@ -3,7 +3,7 @@ from typing import List
 import cv2
 from cv2.typing import MatLike
 import shutil
-from settings import IMAGES_PATH
+from Settings import IMAGES_PATH
 
 
 def save_images(

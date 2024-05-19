@@ -1,4 +1,4 @@
-from numpy import ndarray
+import numpy as np
 from Classes.Ex1.ImagePreprocessor import ImagePreprocessor
 from settings import IMAGES_PATH,SAVE_PROCESED_IMAGES
 import Common.FileFuncs as ff
@@ -45,21 +45,25 @@ def __save_characters(
         
 def __generate_arrays(
     characters: List[tuple[List[MatLike],str]]
-) -> tuple[ndarray,ndarray]:
-    x: ndarray = []
-    y: ndarray = []
-    for chars,str in characters:
-        x.append(chars)
-        y.append(str)
-    return x,y
+) -> tuple[np.ndarray,np.ndarray]:
+    c = [] # Caracteristicas: Array 62 (tipos de caracteres) x 625 (nº imagenes) x 625 (nº pixeles por imagen)
+    e = [] # Etiquetas: 1-62
+    i=1
+    for chars,_ in characters:
+        for char in chars:
+            c.append(np.ravel(np.array(char)))
+            e.append(i)
+        i+=1
+    return np.array(c),np.array(e)
 
 def __get_arrays(
     image_dir: str,
     new_path: str
-) -> tuple[ndarray,ndarray]:
+) -> tuple[np.ndarray,np.ndarray]:
     
     #Remover el contenido de las imagenes procesadas:
-    ff.remove_directory_content(IMAGES_PATH+new_path)
+    if SAVE_PROCESED_IMAGES:
+        ff.remove_directory_content(IMAGES_PATH+new_path)
     
     #Cargar las imágenes:
     dirs: List[str] = __get_all_directories(image_dir)
@@ -82,12 +86,15 @@ def __get_arrays(
 def exec1() -> None:
     
     #Train arrays:
-    x_train,y_train = __get_arrays("train_ocr_origen\\","train_ocr_new\\")
+    c_train,e_train = __get_arrays("train_ocr_origen\\","train_ocr_new\\")
     
     #Test arrays:
-    x_test,y_test = __get_arrays("validation_ocr_origen\\","validation_ocr_new\\")
+    c_test,e_test = __get_arrays("validation_ocr_origen\\","validation_ocr_new\\")
     
-    
+    print(len(c_train))
+    print(len(e_train))
+    print(len(c_test))
+    print(len(e_test))
     
     
     

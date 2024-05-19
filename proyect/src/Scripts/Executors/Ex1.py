@@ -1,10 +1,12 @@
 import numpy as np
 from Classes.Ex1.ImagePreprocessor import ImagePreprocessor
-from settings import IMAGES_PATH,SAVE_PROCESED_IMAGES
+from Settings import IMAGES_PATH,SAVE_PROCESED_IMAGES
 import Common.FileFuncs as ff
 from typing import List
 from cv2.typing import MatLike
 import os
+import matplotlib.pyplot as plt
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 def __get_all_directories(dir:str) -> List[str]:
     dirs: List[str] = [dir+d for d in os.listdir(IMAGES_PATH+dir)]
@@ -82,6 +84,29 @@ def __get_arrays(
     
     #Crear los arrays:
     return __generate_arrays(characters)
+
+def train(c_train,e_train, c_test,e_test):
+    lda = LinearDiscriminantAnalysis()
+    lda.fit(c_train,e_train)
+    Z = lda.transform(c_train)
+    z_test = lda.transform(c_test)
+    print(Z.shape)
+    print(lda.score(c_train,e_train))
+    ypred = lda.predict(c_train)
+    print(ypred)
+    print(lda.score(c_test,e_test))
+    y_test_predict = lda.predict(c_test)
+    print(len(y_test_predict))    
+
+    plt.hist(Z[0:100,0], 20,
+    facecolor='green', alpha=0.75)
+    plt.hist(Z[100:200,0], 20,
+    facecolor='red', alpha=0.75)
+    plt.show()
+
+    plt.plot(Z[0:100],'+')
+    plt.plot(Z[100:200],'o')
+    plt.show()
     
 def exec1() -> None:
     
@@ -95,10 +120,8 @@ def exec1() -> None:
     print(len(e_train))
     print(len(c_test))
     print(len(e_test))
-    
-    
-    
-    
-    
-    
+
+    train(c_train,e_train,c_test,e_test)
+
+
     

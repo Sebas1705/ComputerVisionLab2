@@ -1,6 +1,6 @@
 from numpy import ndarray
 from Classes.Ex1.ImagePreprocessor import ImagePreprocessor
-from settings import IMAGES_PATH
+from settings import IMAGES_PATH,SAVE_PROCESED_IMAGES
 import Common.FileFuncs as ff
 from typing import List
 from cv2.typing import MatLike
@@ -73,7 +73,8 @@ def __get_arrays(
     ]
     
     #Guardar las imágenes procesadas:
-    __save_characters(characters,image_dir,new_path)
+    if SAVE_PROCESED_IMAGES:
+        __save_characters(characters,image_dir,new_path)
     
     #Crear los arrays:
     return __generate_arrays(characters)

@@ -48,6 +48,6 @@ class ImagePreprocessor:
         for countours_s in countours:
             for contour in countours_s:
                 x, y, w, h = cv2.boundingRect(contour)
-                characters.append(cv2.resize(self.images[0][y:y+h,x:x+w],(30,40)))
+                characters.append(cv2.resize(self.images[0][y:y+h,x:x+w],(25,25)))
         
         return characters

@@ -30,9 +30,9 @@ class ImagePreprocessor:
     def __get_contours(
         self,
         threshs: List[MatLike]
-    ) -> List[Sequence[MatLike]]:
+    ) -> List[tuple[Sequence[MatLike],MatLike]]:
         return [
-            cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+            (cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0],thresh)
             for thresh in threshs
         ]
             
@@ -42,12 +42,12 @@ class ImagePreprocessor:
         
         self.__convert_grayscale()
         threshs: List[MatLike] = self.__adaptative_umbralize()
-        countours: List[Sequence[MatLike]] = self.__get_contours(threshs)
+        countours: List[Sequence[MatLike],] = self.__get_contours(threshs)
         
         characters: List[MatLike] = []
-        for countours_s in countours:
+        for countours_s,img in countours:
             for contour in countours_s:
                 x, y, w, h = cv2.boundingRect(contour)
-                characters.append(cv2.resize(self.images[0][y:y+h+2,x:x+w+2],(25,25)))
-        
+            characters.append(cv2.resize(img[y:y+h+2,x:x+w+2],(25,25)))
+                
         return characters

@@ -5,7 +5,6 @@ from cv2.typing import MatLike
 import shutil
 from Settings import IMAGES_PATH
 
-
 def save_images(
     images_to_save: List[MatLike],
     path:str,
@@ -30,7 +29,7 @@ def save_images(
         os.mkdir(path)
     for i in range(len(images_to_save)):
         img: MatLike = cv2.cvtColor(images_to_save[i],cv2Const) if cv2Const!=None else images_to_save[i]
-        cv2.imwrite(f"{path}/{extra}{i:0>5}.png",img)
+        cv2.imwrite(f"{path}/{extra}{i:0>4}.png",img)
         
 def read_images(
     path:str,

@@ -1,7 +1,7 @@
 import os
 
 #---Flags:
-SAVE_PROCESED_IMAGES = True
+SAVE_PROCESED_IMAGES = False
 
 #---FileFuncs:
 GLOBAL_PATH = os.path.abspath(__file__).replace("proyect\\src\\Settings.py","")

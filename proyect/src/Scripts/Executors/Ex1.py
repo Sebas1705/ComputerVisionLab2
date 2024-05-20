@@ -218,6 +218,7 @@ def __get_arrays(
 
 def __test_clasifier(
     clf_name:str,
+    rd_name:str,
     cr_train: np.ndarray,
     e_train: np.ndarray,
     cr_test: np.ndarray,
@@ -231,6 +232,8 @@ def __test_clasifier(
     clf_name : str
         The name of the classifier to be tested. It should be one of the following:
         'SVC', 'RandomForest', 'KNN', 'LogisticRegression', 'DecisionTree', 'GaussianNB'
+    rd_name : str
+        The name of dimensionality reducer applied.
     cr_train : np.ndarray
         The transformed training data after applying Linear Discriminant Analysis (LDA).
     e_train : np.ndarray
@@ -260,11 +263,16 @@ def __test_clasifier(
     pred=clf.predict(cr_test)
     #Metrics:
     mets: str = metrics.classification_report(e_test,pred)
-    ff.create_txt(FILES_PATH+clf_name+"_Metrics.txt",mets)
+    ff.create_txt(FILES_PATH+rd_name+"_"+clf_name+"_Metrics.txt",mets)
+    return mets
     
 
 def exec1(
-    clasifier_name: str = 'All'
+    c_train: np.ndarray,
+    e_train: np.ndarray,
+    c_test: np.ndarray,
+    e_test: np.ndarray,    
+    clasifier_name: str = 'All'    
 ) -> str:
     """
     This function is the main entry point for the OCR (Optical Character Recognition) 
@@ -283,27 +291,22 @@ def exec1(
     str
         Classification report for the specified classifier
     """
-    
-    #Train arrays:
-    c_train,e_train = __get_arrays("train_ocr_origen\\","train_ocr_new\\")
-    
+
     #Create LDA and CR:
     lda = LinearDiscriminantAnalysis()
     lda.fit(c_train,e_train)
-    CR: np.ndarray = lda.transform(c_train)
+    CR: np.ndarray = lda.transform(c_train)   
     
-    #Test arrays:
-    c_test,e_test = __get_arrays("validation_ocr_origen\\","validation_ocr_new\\")
     CR_TEST: np.ndarray = lda.transform(c_test)
    
     #Test clasifiers:
     if clasifier_name == "All":
         mets = ""
-        mets += __test_clasifier('SVC',CR,e_train,CR_TEST,e_test)
-        mets += __test_clasifier('RandomForest',CR,e_train,CR_TEST,e_test)
-        mets += __test_clasifier('KNN',CR,e_train,CR_TEST,e_test)
-        mets += __test_clasifier('LogisticRegression',CR,e_train,CR_TEST,e_test)
-        mets += __test_clasifier('DecisionTree',CR,e_train,CR_TEST,e_test)
-        mets += __test_clasifier('GaussianNB',CR,e_train,CR_TEST,e_test)
+        mets += __test_clasifier('SVC','LDA',CR,e_train,CR_TEST,e_test)
+        mets += __test_clasifier('RandomForest','LDA',CR,e_train,CR_TEST,e_test)
+        mets += __test_clasifier('KNN','LDA',CR,e_train,CR_TEST,e_test)
+        mets += __test_clasifier('LogisticRegression','LDA',CR,e_train,CR_TEST,e_test)
+        mets += __test_clasifier('DecisionTree','LDA',CR,e_train,CR_TEST,e_test)
+        mets += __test_clasifier('GaussianNB','LDA',CR,e_train,CR_TEST,e_test)
         return mets
-    return __test_clasifier(clasifier_name,CR,e_train,CR_TEST,e_test)
+    return __test_clasifier(clasifier_name,'LDA',CR,e_train,CR_TEST,e_test)

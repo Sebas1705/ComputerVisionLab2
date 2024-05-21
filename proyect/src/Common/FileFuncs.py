@@ -75,20 +75,6 @@ def remove_directory_content(
             os.remove(path_complete)
         elif os.path.isdir(path_complete):
             shutil.rmtree(path_complete)
-            
-def remove_images_dests() -> None:
-    """
-    Removes all the images from the destinations folders.
-    """
-    remove_directory_content(path=IMAGES_PATH+"a_gray_before/")
-    remove_directory_content(path=IMAGES_PATH+"b_gray_after/")
-    remove_directory_content(path=IMAGES_PATH+"c_regioned/")
-    remove_directory_content(path=IMAGES_PATH+"d_groupped_regioned/")
-    remove_directory_content(path=IMAGES_PATH+"e_filter_regioned/")
-    remove_directory_content(path=IMAGES_PATH+"f_cropped")
-    remove_directory_content(path=IMAGES_PATH+"g_cropped_mask/")
-    remove_directory_content(path=IMAGES_PATH+"h_final_regioned/")
-    remove_directory_content(path=IMAGES_PATH+"i_final_cropped/")
 
 def create_txt(path:str,text:str):    
     """

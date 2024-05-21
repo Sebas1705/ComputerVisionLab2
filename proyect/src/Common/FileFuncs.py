@@ -1,9 +1,9 @@
-import os
-from typing import List
-import cv2
 from cv2.typing import MatLike
-import shutil
 from Settings import IMAGES_PATH
+from typing import List
+import shutil
+import cv2
+import os
 
 def save_images(
     images_to_save: List[MatLike],

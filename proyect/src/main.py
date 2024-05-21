@@ -1,6 +1,5 @@
 from Scripts.Executors import Ex1,Ex2
 from Classes.Ex1AndEx2.ImageLoader import ImageLoader
-from numpy import ndarray
 import threading
 
 #Globals arrays:

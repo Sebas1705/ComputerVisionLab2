@@ -1,7 +1,7 @@
 from numpy import ndarray
 from typing import List
 from cv2.typing import MatLike
-from Classes.Ex1AndEx2.ImagePreprocessor import ImagePreprocessor
+from Classes.Ex1AndEx2.CharactersPreprocessor import CharactersPreprocessor
 from Settings import IMAGES_PATH
 import os
 import Common.FileFuncs as ff
@@ -102,9 +102,9 @@ class ImageLoader:
     def __create_images_preprocessors(
         self,
         images_dir: List[tuple[List[MatLike],str]]
-    ) -> List[ImagePreprocessor]:
+    ) -> List[CharactersPreprocessor]:
         """
-        This function creates a list of ImagePreprocessor objects. Each ImagePreprocessor object is initialized with a tuple containing
+        This function creates a list of CharactersPreprocessor objects. Each CharactersPreprocessor object is initialized with a tuple containing
         a list of images and their corresponding directory path.
 
         Parameters:
@@ -115,25 +115,25 @@ class ImageLoader:
 
         Returns:
         -----------
-        List[ImagePreprocessor]
-            A list of ImagePreprocessor objects, where each object is initialized with a tuple from the input list.
-            The ImagePreprocessor objects are responsible for processing the images and extracting character images.
+        List[CharactersPreprocessor]
+            A list of CharactersPreprocessor objects, where each object is initialized with a tuple from the input list.
+            The CharactersPreprocessor objects are responsible for processing the images and extracting character images.
 
         Notes:
         -------
-        This function iterates over the input list of tuples, creates an ImagePreprocessor object for each tuple,
-        and appends the object to a list. Finally, it returns the list of ImagePreprocessor objects.
+        This function iterates over the input list of tuples, creates an CharactersPreprocessor object for each tuple,
+        and appends the object to a list. Finally, it returns the list of CharactersPreprocessor objects.
 
-        The ImagePreprocessor class is assumed to have a constructor that takes two parameters:
+        The CharactersPreprocessor class is assumed to have a constructor that takes two parameters:
         - directory path (str)
         - list of images (List[MatLike])
 
-        The ImagePreprocessor class is responsible for processing the images and extracting character images.
+        The CharactersPreprocessor class is responsible for processing the images and extracting character images.
         """
 
-        imgs_preps: List[ImagePreprocessor] = []
+        imgs_preps: List[CharactersPreprocessor] = []
         for tp in images_dir:
-            img_prep: ImagePreprocessor = ImagePreprocessor(tp[1],tp[0])
+            img_prep: CharactersPreprocessor = CharactersPreprocessor(tp[1],tp[0])
             imgs_preps.append(img_prep)
         return imgs_preps
 
@@ -245,7 +245,7 @@ class ImageLoader:
         images_dir: List[tuple[List[MatLike],str]] = self.__charge_train_images(dirs)
         
         # Process images and obtain characters:
-        imgs_preps: List[ImagePreprocessor] = self.__create_images_preprocessors(images_dir)
+        imgs_preps: List[CharactersPreprocessor] = self.__create_images_preprocessors(images_dir)
         characters: List[tuple[List[MatLike],str]] = [
             (prep.proccess_images(),prep.path) 
             for prep in imgs_preps

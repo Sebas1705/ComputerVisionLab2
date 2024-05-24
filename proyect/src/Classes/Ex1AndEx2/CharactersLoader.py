@@ -1,41 +1,18 @@
 from numpy import ndarray
-from typing import List
+from typing import List, override
 from cv2.typing import MatLike
-from Classes.Ex1AndEx2.CharactersPreprocessor import CharactersPreprocessor
 from Settings import IMAGES_PATH
+from Classes.Ex1AndEx2.CharactersPreprocessor import CharactersPreprocessor
+from Classes.Common.ImageLoader import ImageLoader
+from Classes.Common.ImagePreproccesor import ImagePreproccesor
 import os
 import Common.FileFuncs as ff
 import numpy as np
-class ImageLoader:
+
+class CharactersLoader(ImageLoader):
     
-    def __init__(
-        self,
-        origen_path: str,
-        new_path: str,
-        save: bool = False
-    ) -> None:
-        """
-        Initializes an instance of the ImageLoader class.
-
-        Parameters:
-        -----------
-        origen_path : str
-            The directory path where the original images are located.
-        new_path : str
-            The directory path where the processed images will be saved.
-        save : bool, optional
-            A flag indicating whether to save the processed images. Default is False.
-
-        Returns:
-        -----------
-            None
-        """
-        self.image: List[MatLike] = []
-        self.origen_path: str = origen_path
-        self.new_path: str = new_path
-        self.save: bool = save
-        
-    def __get_all_directories(
+    @override
+    def get_all_directories(
         self,
         dir:str
     ) -> List[str]:
@@ -68,41 +45,50 @@ class ImageLoader:
                 dirs.append(ext+"\\"+dir)
         return dirs
 
-    def __charge_train_images(
+    @override
+    def save_images(
         self,
-        dirs:List[str]
-    ) -> List[tuple[List[MatLike],str]]:
+        images: List[tuple[List[MatLike],str]],
+        image_dir: str,
+        new_path: str
+    ) -> None:
         """
-        This function loads images from the given directories and returns a list of tuples.
-        Each tuple contains a list of images and their corresponding directory path.
+        This function saves the processed character images to the specified directory.
 
         Parameters:
         -----------
-        dirs : List[str]
-            A list of directory paths from which to load images.
+        characters : List[tuple[List[MatLike],str]]
+            A list of tuples, where each tuple contains a list of character images and their corresponding directory path.
+        image_dir : str
+            The original directory path where the images were loaded from.
+        new_path : str
+            The directory path where the processed images will be saved.
 
         Returns:
         -----------
-        List[tuple[List[MatLike],str]]
-            A list of tuples, where each tuple contains a list of images and their corresponding directory path.
-            The images are loaded using the read_images function from the Common.FileFuncs module.
+            None
 
         Notes:
         -------
-        This function iterates over the input list of directory paths, loads the images from each directory using the
-        read_images function, and appends a tuple containing the loaded images and their corresponding directory path
-        to a list. Finally, it returns the list of tuples.
+        This function first creates two directories within the new_path: 'ayus' and 'inus'.
+        Then, it iterates over the list of character images, extracts the directory path from each tuple,
+        and constructs a new path by replacing the image_dir with the new_path.
+        Finally, it saves the character images to the new path using the save_images function from the Common.FileFuncs module.
         """
-        
-        images_dir: List[tuple[List[MatLike],str]] = []
-        for dir in dirs:
-            images_dir.append((ff.read_images(IMAGES_PATH+dir),dir))
-        return images_dir
 
-    def __create_images_preprocessors(
+        os.mkdir(IMAGES_PATH+f"{new_path}mayus")
+        os.mkdir(IMAGES_PATH+f"{new_path}minus")
+        for imgs,str in images:
+            path = IMAGES_PATH+new_path+str
+            path = path.split(image_dir)
+            path = path[0]+path[1]
+            ff.save_images(imgs,path)
+       
+    @override   
+    def create_preprocessors(
         self,
         images_dir: List[tuple[List[MatLike],str]]
-    ) -> List[CharactersPreprocessor]:
+    ) -> List[ImagePreproccesor]:
         """
         This function creates a list of CharactersPreprocessor objects. Each CharactersPreprocessor object is initialized with a tuple containing
         a list of images and their corresponding directory path.
@@ -136,45 +122,7 @@ class ImageLoader:
             img_prep: CharactersPreprocessor = CharactersPreprocessor(tp[1],tp[0])
             imgs_preps.append(img_prep)
         return imgs_preps
-
-    def __save_characters(
-        self,
-        characters: List[tuple[List[MatLike],str]],
-        image_dir: str,
-        new_path: str
-    ) -> None:
-        """
-        This function saves the processed character images to the specified directory.
-
-        Parameters:
-        -----------
-        characters : List[tuple[List[MatLike],str]]
-            A list of tuples, where each tuple contains a list of character images and their corresponding directory path.
-        image_dir : str
-            The original directory path where the images were loaded from.
-        new_path : str
-            The directory path where the processed images will be saved.
-
-        Returns:
-        -----------
-            None
-
-        Notes:
-        -------
-        This function first creates two directories within the new_path: 'ayus' and 'inus'.
-        Then, it iterates over the list of character images, extracts the directory path from each tuple,
-        and constructs a new path by replacing the image_dir with the new_path.
-        Finally, it saves the character images to the new path using the save_images function from the Common.FileFuncs module.
-        """
-
-        os.mkdir(IMAGES_PATH+f"{new_path}mayus")
-        os.mkdir(IMAGES_PATH+f"{new_path}minus")
-        for chars,str in characters:
-            path = IMAGES_PATH+new_path+str
-            path = path.split(image_dir)
-            path = path[0]+path[1]
-            ff.save_images(chars,path)
-            
+  
     def __generate_arrays(
         self,
         characters: List[tuple[List[MatLike],str]]
@@ -241,11 +189,11 @@ class ImageLoader:
             ff.remove_directory_content(IMAGES_PATH+self.new_path)
         
         # Load images:
-        dirs: List[str] = self.__get_all_directories(self.origen_path)
-        images_dir: List[tuple[List[MatLike],str]] = self.__charge_train_images(dirs)
+        dirs: List[str] = self.get_all_directories(self.origen_path)
+        images_dir: List[tuple[List[MatLike],str]] = self.charge_images(dirs)
         
         # Process images and obtain characters:
-        imgs_preps: List[CharactersPreprocessor] = self.__create_images_preprocessors(images_dir)
+        imgs_preps: List[CharactersPreprocessor] = self.create_preprocessors(images_dir)
         characters: List[tuple[List[MatLike],str]] = [
             (prep.proccess_images(),prep.path) 
             for prep in imgs_preps
@@ -253,7 +201,7 @@ class ImageLoader:
         
         # Save processed images:
         if self.save:
-            self.__save_characters(characters,self.origen_path,self.new_path)
+            self.save_images(characters,self.origen_path,self.new_path)
         
         # Create arrays:
         return self.__generate_arrays(characters)

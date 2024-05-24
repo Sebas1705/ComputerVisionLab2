@@ -1,6 +1,6 @@
 from threading import Thread
 from typing import Any, List
-from Settings import FILES_PATH
+from Settings import FILES_PATH,DEBUG_MODE
 from sklearn import metrics
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier
@@ -12,6 +12,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import Common.FileFuncs as ff
 import numpy as np
 import time
+import threading
 
 class ClassifierTester:
     
@@ -97,10 +98,11 @@ class ClassifierTester:
         #Predict:
         pred=clf.predict(self.cr_test)
         #Metrics:
-        mets: str = metrics.classification_report(self.e_test,pred)
-        ff.create_txt(FILES_PATH+f"{self.rd_name}_Metrics/"+clf_name+".txt",mets)
-        self.mets.append(mets + "\n------------------\n" + f"\n\tTime: {(time.time()-start):.2f}")
-        print(f"Finish {self.rd_name}-{clf_name}")
+        mets: str = metrics.classification_report(self.e_test,pred)+ f"\n\tTime: {(time.time()-start):.2f}"
+        ff.create_txt(FILES_PATH+f"{self.rd_name}/Metrics/"+clf_name+".txt",mets)
+        self.mets.append(mets + "\n------------------\n")
+        if DEBUG_MODE:
+            print(f"{threading.current_thread().name}->Finish {self.rd_name}-{clf_name}")
 
     def test_classifier(
         self
@@ -129,12 +131,12 @@ class ClassifierTester:
         
         if self.clf_name == 'All':
             mets: List[Thread] = [
-                Thread(target=self.train_and_metrics,args=('SVC',)),
-                Thread(target=self.train_and_metrics,args=('RandomForest',)),
-                Thread(target=self.train_and_metrics,args=('KNN',)),
-                Thread(target=self.train_and_metrics,args=('LogisticRegression',)),
-                Thread(target=self.train_and_metrics,args=('DecisionTree',)),
-                Thread(target=self.train_and_metrics,args=('GaussianNB',))
+                Thread(target=self.train_and_metrics,args=('SVC',), name=f"SVC {self.rd_name}"),
+                Thread(target=self.train_and_metrics,args=('RandomForest',), name=f"RandomForest {self.rd_name}"),
+                Thread(target=self.train_and_metrics,args=('KNN',), name=f"KNN {self.rd_name}"),
+                Thread(target=self.train_and_metrics,args=('LogisticRegression',), name=f"LogisticRegression {self.rd_name}"),
+                Thread(target=self.train_and_metrics,args=('DecisionTree',), name=f"DecisionTree {self.rd_name}"),
+                Thread(target=self.train_and_metrics,args=('GaussianNB',), name=f"GaussianNB {self.rd_name}")
             ]
             [met.start() for met in mets]
             [met.join() for met in mets]

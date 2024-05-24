@@ -56,6 +56,7 @@ def read_images(
         cv2.cvtColor(cv2.imread(os.path.join(path,file)),cv2Const) 
         if cv2Const is not None else cv2.imread(os.path.join(path,file))
         for file in os.listdir(path)
+        if file.endswith(".png") or file.endswith(".jpg")
     ]
 
 def remove_directory_content(

@@ -66,3 +66,5 @@
     accuracy                           0.93     15500
    macro avg       0.94      0.93      0.93     15500
 weighted avg       0.94      0.93      0.93     15500
+
+	Time: 1.10

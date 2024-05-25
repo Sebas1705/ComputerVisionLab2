@@ -1,5 +1,5 @@
 from cv2.typing import MatLike
-from Settings import IMAGES_PATH
+from Common.Settings import IMAGES_PATH
 from typing import List
 import shutil
 import cv2

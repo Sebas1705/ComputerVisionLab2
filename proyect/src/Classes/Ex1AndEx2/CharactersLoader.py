@@ -1,7 +1,7 @@
 from numpy import ndarray
 from typing import List, override
 from cv2.typing import MatLike
-from Settings import IMAGES_PATH
+from Common.Settings import IMAGES_PATH
 from Classes.Ex1AndEx2.CharactersPreprocessor import CharactersPreprocessor
 from Classes.Common.ImageLoader import ImageLoader
 from Classes.Common.ImagePreproccesor import ImagePreproccesor
@@ -150,7 +150,7 @@ class CharactersLoader(ImageLoader):
         
         c = []
         e = [] 
-        i=1
+        i=0
         for chars,_ in characters:
             for char in chars:
                 c.append(np.ravel(np.array(char)))

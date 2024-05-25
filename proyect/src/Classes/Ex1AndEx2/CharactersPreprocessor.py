@@ -1,6 +1,7 @@
 from typing import List, Sequence
 from cv2.typing import MatLike
 from Classes.Common.ImagePreproccesor import ImagePreproccesor
+from Common.Settings import CHARS_SIZE
 import cv2
 
 class CharactersPreprocessor(ImagePreproccesor):
@@ -8,22 +9,6 @@ class CharactersPreprocessor(ImagePreproccesor):
     def proccess_images(
         self
     ) -> List[MatLike]:
-        """
-        Processes the images in the CharactersPreprocessor instance.
-
-        Converts the images to grayscale, applies an adaptive threshold, finds contours,
-        and resizes the detected characters to a standard size.
-
-        Parameters:
-        -----------
-        self : CharactersPreprocessor
-            The instance of the CharactersPreprocessor class.
-
-        Returns:
-        --------
-        List[MatLike]
-            A list of processed character images. Each image is a 25x25 grayscale image.
-        """
         
         self.convert_grayscale()
         threshs: List[MatLike] = self.adaptative_umbralize()
@@ -33,6 +18,6 @@ class CharactersPreprocessor(ImagePreproccesor):
         for countours_s,img in countours:
             for contour in countours_s:
                 x, y, w, h = cv2.boundingRect(contour)
-            characters.append(cv2.resize(img[y:y+h+2,x:x+w+2],(25,25)))
+            characters.append(cv2.resize(img[y:y+h+2,x:x+w+2],CHARS_SIZE))
                 
         return characters

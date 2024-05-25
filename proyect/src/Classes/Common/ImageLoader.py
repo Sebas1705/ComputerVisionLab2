@@ -2,7 +2,7 @@ from typing import List
 from cv2.typing import MatLike
 from abc import ABC,abstractmethod
 from Classes.Common.ImagePreproccesor import ImagePreproccesor
-from Settings import *
+from Common.Settings import *
 import Common.FileFuncs as ff
 
 

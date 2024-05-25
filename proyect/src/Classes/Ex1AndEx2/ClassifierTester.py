@@ -1,6 +1,6 @@
 from threading import Thread
 from typing import Any, List
-from Settings import FILES_PATH,DEBUG_MODE
+from Common.Settings import FILES_PATH,DEBUG_MODE
 from sklearn import metrics
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier,AdaBoostClassifier
@@ -99,7 +99,7 @@ class ClassifierTester:
         pred=clf.predict(self.cr_test)
         #Metrics:
         mets: str = metrics.classification_report(self.e_test,pred)+ f"\n\tTime: {(time.time()-start):.2f}"
-        ff.create_txt(FILES_PATH+f"{self.rd_name}/Metrics/"+clf_name+".txt",mets)
+        ff.create_txt(FILES_PATH+f"{self.rd_name}/"+clf_name+".txt",mets)
         self.mets.append(mets + "\n------------------\n")
         if DEBUG_MODE:
             print(f"{threading.current_thread().name}->Finish {self.rd_name}-{clf_name}")
@@ -108,25 +108,21 @@ class ClassifierTester:
         self
     ) -> str:
         """
-        This method tests a classifier by training and evaluating it using different algorithms.
-        If 'All' is selected, it will train and evaluate all classifiers in parallel.
-        If a specific classifier is selected, it will only train and evaluate that one.
+        This method tests the classifiers based on the given classifier name.
+        If 'All' is provided, it tests all classifiers.
 
         Parameters:
         -----------
-        self : ClassifierTester 
-            The instance of the ClassifierTester class.
+        None
 
         Returns:
         --------
-        str: str
-            A string containing the classification reports and the time taken for 
-            each operation. If 'All' classifiers are tested, the reports are separated 
-            by a newline character.
+        str: A string containing the classification reports and the time taken for the operation.
+            If 'All' classifiers are tested, it returns a string with all the reports separated by newlines.
 
         Raises:
         -------
-            None
+        None
         """
         
         if self.clf_name == 'All':

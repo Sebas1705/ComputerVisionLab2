@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from sklearn.decomposition import PCA
 from Classes.Ex1AndEx2.ClassifierTester import ClassifierTester
-from Settings import DEBUG_MODE
+from Common.Settings import DEBUG_MODE
 
 def exec2(
     c_train: np.ndarray,

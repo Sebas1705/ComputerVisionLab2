@@ -1,8 +1,10 @@
 from numpy import ndarray
 from typing import List, override
 from cv2.typing import MatLike
-from Settings import IMAGES_PATH
+from sklearn.decomposition import PCA
+from Common.Settings import IMAGES_PATH
 from Classes.Ex1AndEx2.CharactersPreprocessor import CharactersPreprocessor
+from sklearn.neighbors import KNeighborsClassifier
 from Classes.Common.ImageLoader import ImageLoader
 from Classes.Common.ImagePreproccesor import ImagePreproccesor
 import os
@@ -11,6 +13,18 @@ import numpy as np
 from Classes.Ex3.PanelsPreprocessor import PanelsPreproccesor
 
 class PanelsLoader(ImageLoader):
+    
+    def __init__(
+        self,
+        classifier: KNeighborsClassifier,
+        pca: PCA,
+        origen_path: str,
+        new_path: str,
+        save: bool = False
+    ) -> None:
+        ImageLoader.__init__(self,origen_path,new_path,save)
+        self.classifier: KNeighborsClassifier = classifier
+        self.pca: PCA = pca
     
     @override
     def get_all_directories(
@@ -110,10 +124,10 @@ class PanelsLoader(ImageLoader):
 
         The CharactersPreprocessor class is responsible for processing the images and extracting character images.
         """
-
+        
         imgs_preps: List[PanelsPreproccesor] = []
         for tp in images_dir:
-            img_prep: PanelsPreproccesor = PanelsPreproccesor(tp[1],tp[0])
+            img_prep: PanelsPreproccesor = PanelsPreproccesor(self.classifier,self.pca,tp[1],tp[0])
             imgs_preps.append(img_prep)
         return imgs_preps
   

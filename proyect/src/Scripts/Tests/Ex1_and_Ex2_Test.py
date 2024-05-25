@@ -1,8 +1,7 @@
 from Scripts.Executors import Ex1,Ex2
 from Classes.Ex1AndEx2.CharactersLoader import CharactersLoader
-from Settings import *
+from Common.Settings import DEBUG_MODE
 import threading
-import pickle
 import sys
 
 #Globals arrays:

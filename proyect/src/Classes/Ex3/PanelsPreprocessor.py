@@ -1,27 +1,45 @@
+import string
 from typing import List, Sequence
 from cv2.typing import MatLike,Rect
+from sklearn.decomposition import PCA
 from Classes.Common.ImagePreproccesor import ImagePreproccesor
 from sklearn.linear_model import RANSACRegressor
+from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 import cv2
+from Common.Settings import CHARS_SIZE
 
 class PanelsPreproccesor(ImagePreproccesor):
     
-    def detect_characters(self,image):
+    def __init__(
+        self,
+        classifier: KNeighborsClassifier,
+        pca: PCA,
+        path: str,
+        images: List[MatLike] = [],
+    ) -> None:
+        ImagePreproccesor.__init__(self,path,images)
+        self.classifier: KNeighborsClassifier = classifier
+        self.pca = pca
+        self.letters = string.digits + string.ascii_uppercase + string.ascii_lowercase
+    
+    def detect_characters(self,image) -> tuple[List[tuple[float,float]],List[MatLike]]:
         gray = image
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         threshold = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
-        contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, img = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         characters = []
+        images = []
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
             aspect_ratio = w / float(h)
             if 0.2 < aspect_ratio < 1.0:
                 characters.append((x + w // 2, y + h // 2))  # Agregar centroide del rectángulo como caracter
-
-        return np.array(characters)
+                images.append(cv2.resize(image[y:y+h+2,x:x+w+2],CHARS_SIZE))
+                
+        return np.array(characters),images
 
     def detect_lines_with_ransac(self,characters):
         line_model = RANSACRegressor(min_samples=2)
@@ -36,14 +54,13 @@ class PanelsPreproccesor(ImagePreproccesor):
 
         return lines
 
-    def classify_characters(self,image, characters):
+    def classify_characters(self,characters:List[MatLike]):
         classified_characters = []
         for character in characters:
-            # Suponiendo que tienes una función para clasificar caracteres
-            # classified_character = classifier.predict(character)
-            classified_character = 'A'  # Suponiendo que 'A' representa un ejemplo de clasificación
-            classified_characters.append(classified_character)
-
+            image = self.pca.transform(np.ravel(np.array(character)).reshape(1,-1))
+            classified_character = self.classifier.predict(image)
+            classified_characters.append(self.letters[classified_character[0]])
+        print(classified_characters)
         return classified_characters
 
     def generate_output_string(self,classified_characters, image_width):
@@ -65,18 +82,16 @@ class PanelsPreproccesor(ImagePreproccesor):
         threshs: List[MatLike] = self.adaptative_umbralize()
         # Invertir la imagen para tener las letras en blanco y el fondo en negro
 
+        for thresh in threshs:
+            characters,imgs = self.detect_characters(thresh)
+            lines = self.detect_lines_with_ransac(characters)
+            classified_characters = self.classify_characters(imgs)
         
-        characters = [self.detect_characters(thresh) for thresh in threshs]
+        # strings = [
+        #     f"Nº{i}"+self.generate_output_string(classified_characters[i], self.images[i].shape[1])
+        #     for i in range(len(classified_characters))
+        # ]
         
-        lines = [self.detect_lines_with_ransac(chars) for chars in characters]
-        
-        classified_characters = [self.classify_characters(self.images[i],characters[i]) for i in range(len(characters))]
-        
-        strings = [
-            f"Nº{i}"+self.generate_output_string(classified_characters[i], self.images[i].shape[1])
-            for i in range(len(classified_characters))
-        ]
-        
-        print("\n------\n".join(strings))
+        # print("\n------\n".join(strings))
         
         return []

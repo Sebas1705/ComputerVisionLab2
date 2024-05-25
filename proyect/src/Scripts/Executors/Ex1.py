@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from Classes.Ex1AndEx2.ClassifierTester import ClassifierTester
 import sys
-from Settings import DEBUG_MODE
+from Common.Settings import DEBUG_MODE
 
 def exec1(
     c_train: np.ndarray,

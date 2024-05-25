@@ -23,23 +23,25 @@ class PanelsPreproccesor(ImagePreproccesor):
         self.pca = pca
         self.letters = string.digits + string.ascii_uppercase + string.ascii_lowercase
     
-    def detect_characters(self,image) -> tuple[List[tuple[float,float]],List[MatLike]]:
+    def detect_characters(self,image) -> tuple[List[tuple[float,float]],MatLike]:
         gray = image
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        threshold = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
-
+        # blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        threshold = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 7, 1)
+        # _, umbral_otsu = cv2.threshold(gray, 66, 255, cv2.THRESH_OTSU)
+        # umbral_otsu_nega = 255-umbral_otsu
         contours, img = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        
         characters = []
-        images = []
+        # images = []
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
+            print(x, y, w, h)            
             aspect_ratio = w / float(h)
-            if 0.2 < aspect_ratio < 1.0:
-                characters.append((x + w // 2, y + h // 2))  # Agregar centroide del rectángulo como caracter
-                images.append(cv2.resize(image[y:y+h+2,x:x+w+2],CHARS_SIZE))
+            # if 0.2 < aspect_ratio < 1.0:
+            characters.append((x + w // 2, y + h // 2))  # Agregar centroide del rectángulo como caracter
+            cv2.rectangle(threshold,(x,y),(x+w, y+h),(0,255,0),2)
                 
-        return np.array(characters),images
+        return np.array(characters),threshold
 
     def detect_lines_with_ransac(self,characters):
         line_model = RANSACRegressor(min_samples=2)
@@ -79,14 +81,15 @@ class PanelsPreproccesor(ImagePreproccesor):
         
         #Umbralizar:
         self.convert_grayscale()
-        threshs: List[MatLike] = self.adaptative_umbralize()
+        # threshs: List[MatLike] = self.adaptative_umbralize()
         # Invertir la imagen para tener las letras en blanco y el fondo en negro
 
-        for thresh in threshs:
+        images = []
+        for thresh in self.images:
             characters,imgs = self.detect_characters(thresh)
-            lines = self.detect_lines_with_ransac(characters)
-            classified_characters = self.classify_characters(imgs)
-        
+            # lines = self.detect_lines_with_ransac(characters)
+            # classified_characters = self.classify_characters(imgs)
+            images.append(imgs)
         # strings = [
         #     f"Nº{i}"+self.generate_output_string(classified_characters[i], self.images[i].shape[1])
         #     for i in range(len(classified_characters))
@@ -94,4 +97,4 @@ class PanelsPreproccesor(ImagePreproccesor):
         
         # print("\n------\n".join(strings))
         
-        return []
+        return images

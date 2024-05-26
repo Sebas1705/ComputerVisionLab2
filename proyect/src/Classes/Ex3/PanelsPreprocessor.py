@@ -93,7 +93,7 @@ class PanelsPreproccesor(ImagePreproccesor):
                 # Eliminar los inliers del conjunto de centros
                 centros = centros[~inliers]
             
-            imagen_con_lineas = images[i].copy()
+            imagen_con_lineas = images[i]
             for linea in lineas:
                 [vx, vy, x, y] = cv2.fitLine(linea, cv2.DIST_L2, 0, 0.01, 0.01)
                 lefty = int((-x * vy / vx) + y)

@@ -145,7 +145,7 @@ class PanelsLoader(ImageLoader):
         # Process images and obtain characters:
         imgs_preps: List[PanelsPreproccesor] = self.create_preprocessors(images_dir)
         proccess_images: List[tuple[List[MatLike],str]] = [
-            (prep.proccess_images()[0],prep.path) 
+            (prep.proccess_images(),prep.path) 
             for prep in imgs_preps
         ]
         

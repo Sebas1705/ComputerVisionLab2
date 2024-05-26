@@ -98,3 +98,20 @@ class PanelsPreproccesor(ImagePreproccesor):
         # print("\n------\n".join(strings))
         
         return images
+
+#
+#def image_proces(img):
+#    blurred = cv2.GaussianBlur(img, (5, 5), 0)
+#    thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 7, 1)
+#    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh, connectivity=8)
+#
+#    # Crear una copia de la imagen binaria para modificar las regiones
+#    imagen_modificada = thresh.copy()
+#
+#    # Filtrar y modificar las regiones
+#    for i in range(1, num_labels):  # Empezar desde 1 para ignorar el fondo
+#        area = stats[i, cv2.CC_STAT_AREA]
+#        if area > 400:  # Umbral de tamaño (ajusta según sea necesario)
+#            # Cambiar los píxeles de la región a negro
+#            imagen_modificada[labels == i] = 0
+#    return imagen_modificada

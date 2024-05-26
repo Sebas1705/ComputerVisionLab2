@@ -9,7 +9,6 @@ from Classes.Common.ImageLoader import ImageLoader
 from Classes.Common.ImagePreproccesor import ImagePreproccesor
 import os
 import Common.FileFuncs as ff
-import numpy as np
 from Classes.Ex3.PanelsPreprocessor import PanelsPreproccesor
 
 class PanelsLoader(ImageLoader):
@@ -146,7 +145,7 @@ class PanelsLoader(ImageLoader):
         # Process images and obtain characters:
         imgs_preps: List[PanelsPreproccesor] = self.create_preprocessors(images_dir)
         proccess_images: List[tuple[List[MatLike],str]] = [
-            (prep.proccess_images(),prep.path) 
+            (prep.proccess_images()[0],prep.path) 
             for prep in imgs_preps
         ]
         
